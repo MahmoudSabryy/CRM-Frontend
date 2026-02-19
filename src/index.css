@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Modal container */
+.modal-container {
+  max-height: 80vh; /* الحد الأقصى للارتفاع */
+  overflow-y: auto; /* عرض شريط التمرير عند الحاجة */
+  width: 90%; /* عرض 90% من الشاشة */
+  max-width: 800px; /* الحد الأقصى للعرض */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* الأنشطة داخل الـ modal */
+.activity-list {
+  max-height: 60vh; /* تحديد أقصى ارتفاع للقائمة */
+  overflow-y: auto; /* شريط التمرير عند تجاوز الأنشطة للحد الأقصى */
+  margin-bottom: 20px;
+}
+
+/* تصميم زر "إغلاق" أو "إلغاء" */
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* تصميم زر "إضافة نشاط" */
+.add-activity-button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-activity-button:hover {
+  background-color: #2563eb;
+}
