@@ -60,44 +60,44 @@ const EditLeadForm = ({ setIsDrawerOpen, selectedLead, onSubmit }) => {
     }
   };
 
+  const inputBaseClasses =
+    "w-full p-3 rounded-lg border placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800";
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      {/* Name */}
       <input
         {...register("name")}
         placeholder="Enter lead name"
-        className={`w-full p-3 rounded-lg border ${
+        className={`${inputBaseClasses} ${
           errors.name
             ? "border-red-500"
             : touchedFields.name
               ? "border-green-500"
-              : "border-gray-300"
+              : "border-gray-300 dark:border-gray-600"
         }`}
       />
 
-      {/* Email */}
       <input
         {...register("email")}
         placeholder="Enter lead email"
-        className={`w-full p-3 rounded-lg border ${
+        className={`${inputBaseClasses} ${
           errors.email
             ? "border-red-500"
             : touchedFields.email
               ? "border-green-500"
-              : "border-gray-300"
+              : "border-gray-300 dark:border-gray-600"
         }`}
       />
 
-      {/* Phone */}
       <input
         {...register("phone")}
         placeholder="Enter lead phone"
-        className={`w-full p-3 rounded-lg border ${
+        className={`${inputBaseClasses} ${
           errors.phone
             ? "border-red-500"
             : touchedFields.phone
               ? "border-green-500"
-              : "border-gray-300"
+              : "border-gray-300 dark:border-gray-600"
         }`}
       />
 
@@ -105,7 +105,7 @@ const EditLeadForm = ({ setIsDrawerOpen, selectedLead, onSubmit }) => {
       <div>
         <label
           htmlFor="source"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-600 dark:text-gray-300"
         >
           Source
         </label>
@@ -113,13 +113,7 @@ const EditLeadForm = ({ setIsDrawerOpen, selectedLead, onSubmit }) => {
           <select
             {...register("source")}
             id="source"
-            className={`w-full rounded-lg border p-3 ${
-              errors.source
-                ? "border-red-500"
-                : touchedFields.source
-                  ? "border-green-500"
-                  : "border-gray-300"
-            }`}
+            className={`${inputBaseClasses} appearance-none`}
           >
             <option value="">Select source</option>
             <option value="facebook">Facebook</option>
@@ -146,7 +140,7 @@ const EditLeadForm = ({ setIsDrawerOpen, selectedLead, onSubmit }) => {
         <button
           type="button"
           onClick={() => setIsDrawerOpen(false)}
-          className="rounded-lg bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+          className="rounded-lg bg-gray-200 dark:bg-gray-700 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
         >
           Cancel
         </button>

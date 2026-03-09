@@ -45,3 +45,25 @@
 .add-activity-button:hover {
   background-color: #2563eb;
 }
+
+/* ===== DESIGN TOKENS ===== */
+
+:root {
+  --color-bg: #f9fafb;
+  --color-card: #ffffff;
+  --color-border: #e5e7eb;
+  --color-text: #111827;
+  --color-muted: #6b7280;
+  --color-primary: #2563eb;
+  --color-primary-light: #3b82f6;
+}
+
+.dark {
+  --color-bg: #0f172a;
+  --color-card: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-primary: #8b5cf6;
+  --color-primary-light: #a78bfa;
+}

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { baseURL, myHeaders } from "../../Environment/environment";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -12,8 +10,11 @@ import {
   BarChart,
   Bar,
 } from "recharts";
+import { AuthContext } from "../../Context/Auth Context/AuthContext";
 
-export default function ReportsDashboard({ userData }) {
+export default function ReportsDashboard() {
+  const { userData } = useContext(AuthContext);
+
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState(null);
   const [from, setFrom] = useState("");
@@ -22,7 +23,7 @@ export default function ReportsDashboard({ userData }) {
   const [usersList, setUsersList] = useState([]);
 
   /* ================== FETCH DASHBOARD REPORTS ================== */
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${baseURL}/report/dashboard`, {
@@ -35,31 +36,31 @@ export default function ReportsDashboard({ userData }) {
       });
       setReports(res.data);
     } catch (err) {
-      console.error(err);
+      console.error(err.response);
     }
     setLoading(false);
-  };
+  }, [from, to, selectedUser, userData.role]);
 
   /* ================== FETCH USERS IF ADMIN ================== */
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     if (userData.role !== "admin") return;
     try {
-      const res = await axios.get(`${baseURL}/users?active=true`, {
+      const res = await axios.get(`${baseURL}/user?active=true`, {
         headers: myHeaders,
       });
       setUsersList(res.data);
     } catch (err) {
-      console.error(err);
+      console.error(err.response);
     }
-  };
+  }, [userData.role]);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   useEffect(() => {
     fetchReports();
-  }, [from, to, selectedUser]);
+  }, [fetchReports]);
 
   if (loading) return <p>Loading reports...</p>;
   if (!reports) return <p>No data available.</p>;

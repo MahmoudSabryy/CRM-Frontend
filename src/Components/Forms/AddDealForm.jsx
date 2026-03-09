@@ -29,17 +29,12 @@ const validationSchema = Yup.object({
     .required("Probability is required"),
 
   expectedCloseDate: Yup.date()
-    .min(new Date(today), "Date can't be before today")
+    .min(today, "Date can't be before today")
     .required("Date is required"),
 });
 
-const AddDealForm = ({
-  selectedContactId,
-  setIsAddDealModalOpen,
-  isAddDealModalOpen,
-  onSubmit,
-}) => {
-  const { getAllContacts } = useContext(ContactContext);
+const AddDealForm = ({ setIsDrawerOpen, onSubmit }) => {
+  const { contacts } = useContext(ContactContext);
   const {
     register,
     handleSubmit,
@@ -51,20 +46,27 @@ const AddDealForm = ({
 
   const handleFormSubmit = async (formData) => {
     try {
-      if (!selectedContactId) {
+      if (!formData.contactId) {
         return toast.error("please select contact first");
       }
 
+      const payload = {
+        title: formData.title,
+        stage: formData.stage,
+        status: formData.status,
+        amount: formData.amount,
+        probability: formData.probability,
+        expectedCloseDate: formData.expectedCloseDate,
+      };
       await axios.post(
-        `${baseURL}/deal/create/${selectedContactId}`,
-        formData,
+        `${baseURL}/deal/create/${formData.contactId}`,
+        payload,
         {
           headers: myHeaders,
         },
       );
 
-      getAllContacts();
-      setIsAddDealModalOpen(false);
+      setIsDrawerOpen(false);
       reset();
       onSubmit(formData);
       toast.success(`Deal created Successfully ✔`);
@@ -79,30 +81,71 @@ const AddDealForm = ({
       <div className="relative">
         <input
           {...register("title")}
-          className={`w-full rounded-lg border p-3 pr-10 ${
-            errors.title
-              ? "border-red-500"
-              : touchedFields.title
-                ? "border-green-500"
-                : "border-gray-300"
-          }`}
           placeholder="Enter deal title"
+          className={`w-full rounded-lg border p-3 pr-10 
+        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+        placeholder-gray-400 dark:placeholder-gray-500
+        ${errors.title ? "border-red-500" : touchedFields.title ? "border-green-500" : "border-gray-300 dark:border-gray-600"}
+      `}
         />
+        {touchedFields.title && !errors.title && (
+          <FiCheckCircle
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
+          />
+        )}
+        {errors.title && (
+          <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
+        )}
+      </div>
+
+      {/* Contact */}
+      <div>
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
+          Contact
+        </label>
+        <div className="relative">
+          <select
+            {...register("contactId", { required: "Contact is required" })}
+            className="w-full appearance-none rounded-lg border p-3 
+          bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+          border-gray-300 dark:border-gray-600 focus:outline-none focus:border-purple-500"
+          >
+            <option value="">Select contact</option>
+            {contacts.map((contact) => (
+              <option key={contact.id} value={contact.id}>
+                {contact.name} - {contact.email} - {contact.phone}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+            ▼
+          </div>
+          {touchedFields.contactId && !errors.contactId && (
+            <FiCheckCircle
+              className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500"
+              size={18}
+            />
+          )}
+          {errors.contactId && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.contactId.message}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Stage */}
       <div>
-        <label
-          htmlFor="stage"
-          className="block text-sm font-medium text-gray-600"
-        >
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Stage
         </label>
         <div className="relative">
           <select
             {...register("stage", { required: "Stage is required" })}
-            id="stage"
-            className="w-full appearance-none rounded-lg border border-gray-300 p-3 focus:border-purple-500 focus:outline-none"
+            className="w-full appearance-none rounded-lg border p-3 
+          bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+          border-gray-300 dark:border-gray-600 focus:outline-none focus:border-purple-500"
           >
             <option value="">Select stage</option>
             <option value="prospecting">Prospecting</option>
@@ -112,36 +155,32 @@ const AddDealForm = ({
             <option value="won">Won</option>
             <option value="lost">Lost</option>
           </select>
-
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
             ▼
           </div>
-          {/* ✔️ علامة الصح */}
           {touchedFields.stage && !errors.stage && (
             <FiCheckCircle
-              size={18}
               className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500"
+              size={18}
             />
           )}
-          {errors?.stage && (
+          {errors.stage && (
             <p className="mt-1 text-sm text-red-500">{errors.stage.message}</p>
           )}
         </div>
       </div>
 
-      {/* status */}
+      {/* Status */}
       <div>
-        <label
-          htmlFor="status"
-          className="block text-sm font-medium text-gray-600"
-        >
-          status
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
+          Status
         </label>
         <div className="relative">
           <select
-            {...register("status", { required: "status is required" })}
-            id="status"
-            className="w-full appearance-none rounded-lg border border-gray-300 p-3 focus:border-purple-500 focus:outline-none"
+            {...register("status", { required: "Status is required" })}
+            className="w-full appearance-none rounded-lg border p-3 
+          bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+          border-gray-300 dark:border-gray-600 focus:outline-none focus:border-purple-500"
           >
             <option value="">Select Status</option>
             <option value="open">Open</option>
@@ -149,112 +188,76 @@ const AddDealForm = ({
             <option value="on_Hold">On-Hold</option>
             <option value="cancelled">Cancelled</option>
           </select>
-
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
             ▼
           </div>
-
-          {/* ✔️ علامة الصح */}
           {touchedFields.status && !errors.status && (
             <FiCheckCircle
-              size={18}
               className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500"
+              size={18}
             />
           )}
-          {errors?.status && (
+          {errors.status && (
             <p className="mt-1 text-sm text-red-500">{errors.status.message}</p>
           )}
         </div>
       </div>
 
       {/* Deal Value */}
-      <div className="relative">
-        <label
-          htmlFor="amount"
-          className="block text-sm font-medium text-gray-600"
-        >
+      <div>
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Deal Value
         </label>
-
         <input
           {...register("amount", {
-            required: "Value is required",
-            min: {
-              value: 1,
-              message: "Value must be greater than 0",
-            },
             valueAsNumber: true,
+            required: "Value is required",
+            min: 1,
           })}
           type="number"
-          id="amount"
-          className={`w-full rounded-lg border p-3 pr-10 focus:outline-none ${
-            errors.amount
-              ? "border-red-500"
-              : touchedFields.amount
-                ? "border-green-500"
-                : "border-gray-300 focus:border-purple-500"
-          }`}
           placeholder="Enter deal value"
+          className={`w-full rounded-lg border p-3 pr-10 
+        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+        ${errors.amount ? "border-red-500" : touchedFields.amount ? "border-green-500" : "border-gray-300 dark:border-gray-600 focus:border-purple-500"}
+      `}
         />
-
-        {/* ✔️ علامة الصح */}
         {touchedFields.amount && !errors.amount && (
           <FiCheckCircle
-            size={18}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
           />
         )}
-
-        {/* ❌ Error */}
-        {errors?.amount && (
+        {errors.amount && (
           <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>
         )}
       </div>
 
-      {/* Deal probability */}
-      <div className="relative">
-        <label
-          htmlFor="probability"
-          className="block text-sm font-medium text-gray-600"
-        >
+      {/* Probability */}
+      <div>
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Deal Probability %
         </label>
-
         <input
           {...register("probability", {
-            required: "probability value is required",
-            min: {
-              value: 1,
-              message: "Value must be greater than 0",
-            },
-            max: {
-              value: 100,
-              message: "Value must be at most 100",
-            },
             valueAsNumber: true,
+            required: true,
+            min: 1,
+            max: 100,
           })}
           type="number"
-          id="probability"
-          className={`w-full rounded-lg border p-3 pr-10 focus:outline-none ${
-            errors.probability
-              ? "border-red-500"
-              : touchedFields.probability
-                ? "border-green-500"
-                : "border-gray-300 focus:border-purple-500"
-          }`}
-          placeholder="Enter deal value"
+          placeholder="Enter probability"
+          className={`w-full rounded-lg border p-3 pr-10
+        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+        ${errors.probability ? "border-red-500" : touchedFields.probability ? "border-green-500" : "border-gray-300 dark:border-gray-600 focus:border-purple-500"}
+      `}
         />
-
-        {/* ✔️ علامة الصح */}
         {touchedFields.probability && !errors.probability && (
           <FiCheckCircle
-            size={18}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
           />
         )}
-
-        {/* ❌ Error */}
-        {errors?.probability && (
+        {errors.probability && (
           <p className="mt-1 text-sm text-red-500">
             {errors.probability.message}
           </p>
@@ -263,40 +266,25 @@ const AddDealForm = ({
 
       {/* Deal Date */}
       <div>
-        <label
-          htmlFor="expectedCloseDate"
-          className="block text-sm font-medium text-gray-600"
-        >
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Deal Date
         </label>
         <input
-          {...register("expectedCloseDate", {
-            required: "Date is required",
-            min: {
-              value: today,
-              message: "Date Can't be less before today",
-            },
-          })}
-          defaultValue={today}
+          {...register("expectedCloseDate", { required: true, min: today })}
           type="date"
-          id="expectedCloseDate"
-          className={`w-full rounded-lg border p-3 pr-10 focus:outline-none ${
-            errors.amount
-              ? "border-red-500"
-              : touchedFields.amount
-                ? "border-green-500"
-                : "border-gray-300 focus:border-purple-500"
-          }`}
+          defaultValue={today}
+          className={`w-full rounded-lg border p-3 pr-10
+        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+        ${errors.expectedCloseDate ? "border-red-500" : touchedFields.expectedCloseDate ? "border-green-500" : "border-gray-300 dark:border-gray-600 focus:border-purple-500"}
+      `}
         />
-
-        {/* ✔️ علامة الصح */}
         {touchedFields.expectedCloseDate && !errors.expectedCloseDate && (
           <FiCheckCircle
-            size={18}
             className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
           />
         )}
-        {errors?.expectedCloseDate && (
+        {errors.expectedCloseDate && (
           <p className="mt-1 text-sm text-red-500">
             {errors.expectedCloseDate.message}
           </p>
@@ -307,12 +295,11 @@ const AddDealForm = ({
       <div className="flex justify-end gap-3 pt-2">
         <button
           type="button"
-          onClick={() => setIsAddDealModalOpen(false)}
-          className="rounded-lg bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+          onClick={() => setIsDrawerOpen(false)}
+          className="rounded-lg bg-gray-200 dark:bg-gray-700 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
         >
           Cancel
         </button>
-
         <button
           type="submit"
           className="rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"

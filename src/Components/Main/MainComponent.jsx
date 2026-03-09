@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Context/Auth Context/AuthContext";
+import { ThemeContext } from "../../Context/Theme/ThemeContext";
 
-export default function Main({ userData, logOut }) {
+export default function Main() {
+  const { userData, logOut } = useContext(AuthContext);
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
+
   const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -16,12 +21,12 @@ export default function Main({ userData, logOut }) {
      }`;
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
       {/* Sidebar */}
       <aside
         className={`${
           sidebarOpen ? "w-64" : "w-20"
-        } bg-gray-900 text-white transition-all duration-300 flex flex-col`}
+        } bg-gray-900 dark:bg-black text-white transition-all duration-300 flex flex-col`}
       >
         {/* Logo */}
         <div className="h-16 flex items-center justify-center border-b border-gray-800">
@@ -52,47 +57,37 @@ export default function Main({ userData, logOut }) {
             ✨ {sidebarOpen && "Activities"}
           </NavLink>
 
-          <NavLink to="/report" className={navItemClass}>
-            📈 {sidebarOpen && "Reports"}
-          </NavLink>
-
-          <NavLink to="/settings" className={navItemClass}>
+          {/* <NavLink to="/settings" className={navItemClass}>
             ⚙️ {sidebarOpen && "Settings"}
-          </NavLink>
+          </NavLink> */}
         </nav>
       </aside>
 
       {/* Main Section */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 bg-white shadow flex items-center justify-between px-6">
+        <header className="h-16 bg-white dark:bg-gray-800 shadow flex items-center justify-between px-6 transition-colors duration-300">
           {/* Left */}
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-gray-600 hover:text-gray-900 text-xl"
+              className="text-gray-600 dark:text-gray-300 text-xl"
             >
               ☰
             </button>
-
-            <div className="hidden md:block">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
           </div>
 
           {/* Right */}
           <div className="flex items-center gap-6 relative">
-            {/* Notifications */}
-            <div className="relative cursor-pointer">
-              <span className="text-xl">🔔</span>
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                3
-              </span>
-            </div>
+            {/* 🌙 Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 dark:text-white transition"
+            >
+              {darkMode ? "🌙" : "☀️"}
+            </button>
+
+
 
             {/* Profile */}
             <div className="relative">
@@ -103,31 +98,33 @@ export default function Main({ userData, logOut }) {
                 <div className="w-8 h-8 bg-blue-600 text-white flex items-center justify-center rounded-full">
                   {userData?.name?.charAt(0).toUpperCase()}
                 </div>
-                <span className="hidden md:block text-gray-700 font-medium">
+                <span className="hidden md:block text-gray-700 dark:text-gray-200 font-medium">
                   {userData?.role}
                 </span>
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 mt-3 w-40 bg-white border rounded-lg shadow-lg py-2">
+                <div className="absolute right-0 mt-3 w-40 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg py-2">
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Profile
                   </Link>
-                  <a
-                    href="/settings"
-                    className="block px-4 py-2 hover:bg-gray-100"
+
+                  {/* <Link
+                    to="/settings"
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Settings
-                  </a>
+                  </Link> */}
+
                   <button
                     onClick={() => {
                       logOut();
                       navigate("/login");
                     }}
-                    className="block px-4 py-2 text-red-500 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Logout
                   </button>
@@ -138,7 +135,7 @@ export default function Main({ userData, logOut }) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
           <Outlet />
         </main>
       </div>

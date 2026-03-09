@@ -1,10 +1,15 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { baseURL, myHeaders } from "../../Environment/environment";
+import { AuthContext } from "../../Context/Auth Context/AuthContext";
+import { ThemeContext } from "../../Context/Theme/ThemeContext";
 
-export default function ContactDetails({ userData }) {
+export default function ContactDetails() {
   const { id } = useParams();
+  const { userData } = useContext(AuthContext);
+  const { darkMode } = useContext(ThemeContext);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [contact, setContact] = useState({});
@@ -15,6 +20,7 @@ export default function ContactDetails({ userData }) {
         headers: myHeaders,
       });
       setContact(data.data);
+      console.log(data.data);
     } catch (error) {
       console.log(error.response);
     }
@@ -33,10 +39,22 @@ export default function ContactDetails({ userData }) {
     );
   }
 
+  const bgBase = darkMode
+    ? "bg-gray-900 text-gray-200"
+    : "bg-gray-100 text-gray-900";
+  const cardBg = darkMode
+    ? "bg-gray-800 text-gray-200"
+    : "bg-white text-gray-900";
+  const inputBg = darkMode
+    ? "bg-gray-700 text-gray-200 border-gray-600"
+    : "bg-white text-gray-900 border-gray-300";
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className={`min-h-screen ${bgBase}`}>
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-white shadow px-6 py-4 flex justify-between items-center">
+      <div
+        className={`sticky top-0 z-10 shadow px-6 py-4 flex justify-between items-center ${darkMode ? "bg-gray-800" : "bg-white"}`}
+      >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
             {contact.name?.charAt(0).toUpperCase()}
@@ -64,7 +82,7 @@ export default function ContactDetails({ userData }) {
           {userData?.role === "Admin" && (
             <button
               onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-gray-200 rounded-lg text-sm"
+              className={`px-4 py-2 rounded-lg text-sm ${darkMode ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-900"}`}
             >
               Edit
             </button>
@@ -75,14 +93,16 @@ export default function ContactDetails({ userData }) {
       <div className="max-w-7xl mx-auto p-6">
         {/* Tabs */}
         <div className="border-b mb-6 flex gap-6">
-          {["overview", "activity", "deals", "notes"].map((tab) => (
+          {["overview", "activity", "deals"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`pb-3 capitalize ${
                 activeTab === tab
                   ? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-                  : "text-gray-500"
+                  : darkMode
+                    ? "text-gray-400"
+                    : "text-gray-500"
               }`}
             >
               {tab}
@@ -93,14 +113,14 @@ export default function ContactDetails({ userData }) {
         {/* Tab Content */}
         {activeTab === "overview" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow">
+            <div className={`p-6 rounded-xl shadow ${cardBg}`}>
               <h3 className="font-semibold mb-4">Contact Info</h3>
               <p>Email: {contact.email}</p>
               <p>Phone: {contact.phone}</p>
               <p>Address: {contact.address || "not Provided"}</p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow">
+            <div className={`p-6 rounded-xl shadow ${cardBg}`}>
               <h3 className="font-semibold mb-4">Company Info</h3>
               <p>Company: {contact.company || "N/A"}</p>
               <p>Industry: {contact.industry || "N/A"}</p>
@@ -110,15 +130,20 @@ export default function ContactDetails({ userData }) {
         )}
 
         {activeTab === "activity" && (
-          <div className="bg-white p-6 rounded-xl shadow space-y-6">
+          <div className={`p-6 rounded-xl shadow space-y-6 ${cardBg}`}>
             {contact.activities?.length ? (
               contact.activities.map((activity) => (
                 <div
                   key={activity.id}
-                  className="border-l-4 border-blue-500 pl-4"
+                  className={`border-l-4 pl-4 ${darkMode ? "border-blue-500" : "border-blue-500"}`}
                 >
-                  <p className="font-medium">{activity.title}</p>
-                  <p className="text-sm text-gray-500">{activity.date}</p>
+                  <p className="font-medium">{activity.type}</p>
+                  <p className="font-medium">{activity.note}</p>
+                  <p
+                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                  >
+                    {activity.activityDate}
+                  </p>
                 </div>
               ))
             ) : (
@@ -128,14 +153,16 @@ export default function ContactDetails({ userData }) {
         )}
 
         {activeTab === "deals" && (
-          <div className="bg-white p-6 rounded-xl shadow overflow-x-auto">
+          <div className={`p-6 rounded-xl shadow overflow-x-auto ${cardBg}`}>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b">
+                <tr
+                  className={`border-b ${darkMode ? "border-gray-600" : "border-gray-200"}`}
+                >
                   <th className="p-3 text-left">Deal</th>
                   <th className="p-3 text-left">Amount</th>
                   <th className="p-3 text-left">Status</th>
-                  <th className="p-3 text-left">stage</th>
+                  <th className="p-3 text-left">Stage</th>
                   <th className="p-3 text-left">Probability</th>
                   <th className="p-3 text-left">Expected Close Date</th>
                   <th className="p-3 text-left">Created At</th>
@@ -145,7 +172,10 @@ export default function ContactDetails({ userData }) {
               <tbody>
                 {contact.deals?.length ? (
                   contact.deals.map((deal) => (
-                    <tr key={deal.id} className="border-b hover:bg-gray-50">
+                    <tr
+                      key={deal.id}
+                      className={`border-b hover:${darkMode ? "bg-gray-800" : "bg-gray-50"}`}
+                    >
                       <td className="p-3">{deal.title}</td>
                       <td className="p-3">${deal.amount}</td>
                       <td className="p-3">{deal.status}</td>
@@ -161,8 +191,12 @@ export default function ContactDetails({ userData }) {
                         <span
                           className={`px-2 py-1 text-xs rounded-full ${
                             deal.status === "Closed"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-yellow-100 text-yellow-600"
+                              ? darkMode
+                                ? "bg-green-700 text-green-200"
+                                : "bg-green-100 text-green-600"
+                              : darkMode
+                                ? "bg-yellow-700 text-yellow-200"
+                                : "bg-yellow-100 text-yellow-600"
                           }`}
                         >
                           {deal.status}
@@ -172,7 +206,7 @@ export default function ContactDetails({ userData }) {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" className="p-3 text-gray-400">
+                    <td colSpan="8" className="p-3 text-gray-400 text-center">
                       No deals available.
                     </td>
                   </tr>
@@ -181,49 +215,35 @@ export default function ContactDetails({ userData }) {
             </table>
           </div>
         )}
-
-        {activeTab === "notes" && (
-          <div className="bg-white p-6 rounded-xl shadow space-y-4">
-            {contact.notes?.length ? (
-              contact.notes.map((note, i) => (
-                <div key={i} className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm">{note}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400">No notes yet.</p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Edit Modal */}
       {isEditing && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-xl w-full max-w-md">
+          <div
+            className={`p-8 rounded-xl w-full max-w-md ${darkMode ? "bg-gray-800 text-gray-200" : "bg-white text-gray-900"}`}
+          >
             <h3 className="text-lg font-bold mb-4">Edit Contact</h3>
 
             <input
               type="text"
               defaultValue={contact.name}
-              className="w-full p-2 border rounded mb-4"
+              className={`w-full p-2 rounded mb-4 border ${inputBg}`}
             />
-
             <input
               type="email"
               defaultValue={contact.email}
-              className="w-full p-2 border rounded mb-4"
+              className={`w-full p-2 rounded mb-4 border ${inputBg}`}
             />
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className={`px-4 py-2 rounded ${darkMode ? "bg-gray-700 text-gray-200" : "bg-gray-300 text-gray-900"}`}
               >
                 Cancel
               </button>
-
-              <button className="px-4 py-2 bg-blue-600 text-white rounded">
+              <button className="px-4 py-2 rounded bg-blue-600 text-white">
                 Save
               </button>
             </div>

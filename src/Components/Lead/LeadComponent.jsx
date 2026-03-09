@@ -8,10 +8,13 @@ import EditLeadForm from "../Forms/EditLeadForm";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { AuthContext } from "../../Context/Auth Context/AuthContext";
 
 const statuses = ["new", "contacted", "qualified", "unqualified"];
 
-export default function LeadComponent({ userData }) {
+export default function LeadComponent() {
+  const { userData } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const { leads, softDeleteLead, setLeads } = useContext(LeadContext);
 

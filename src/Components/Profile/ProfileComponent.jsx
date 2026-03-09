@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../Context/Auth Context/AuthContext";
 
-export default function ProfileComponent({ userData }) {
+export default function ProfileComponent() {
+  const { userData } = useContext(AuthContext);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [darkMode, setDarkMode] = useState(false);
   const [isEditing, setIsEditing] = useState(false);

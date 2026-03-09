@@ -10,18 +10,14 @@ import { useContext } from "react";
 
 const validationSchema = Yup.object({
   title: Yup.string().min(3, "Title must be at least 3 chars"),
-
   status: Yup.string(),
-
   amount: Yup.number()
     .typeError("Value must be a number")
     .min(1, "Value must be at least 1"),
-
   probability: Yup.number()
     .typeError("Probability must be a number")
     .min(1, "Probability must be at least 1")
     .max(100, "Probability must be at most 100"),
-
   expectedCloseDate: Yup.date().min(
     new Date(today),
     "Date can't be before today",
@@ -30,6 +26,7 @@ const validationSchema = Yup.object({
 
 const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
   const { getAllContacts } = useContext(ContactContext);
+
   const {
     register,
     handleSubmit,
@@ -41,9 +38,7 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
 
   const handleFormSubmit = async (formData) => {
     try {
-      if (!selectedDealId) {
-        return toast.error("please select deal first");
-      }
+      if (!selectedDealId) return toast.error("Please select deal first");
 
       await axios.post(`${baseURL}/deal/update/${selectedDealId}`, formData, {
         headers: myHeaders,
@@ -53,11 +48,20 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
       setIsEditDealModalOpen(false);
       reset();
       onSubmit(formData);
-      toast.success(`Deal updated Successfully ✔`);
+      toast.success("Deal updated successfully ✔");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
+
+  const inputClasses = (field) =>
+    `w-full rounded-lg border p-3 pr-10 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none ${
+      errors[field]
+        ? "border-red-500"
+        : touchedFields[field]
+          ? "border-green-500"
+          : "border-gray-300 dark:border-gray-600 focus:border-purple-500"
+    }`;
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
@@ -65,30 +69,29 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
       <div className="relative">
         <input
           {...register("title")}
-          className={`w-full rounded-lg border p-3 pr-10 ${
-            errors.title
-              ? "border-red-500"
-              : touchedFields.title
-                ? "border-green-500"
-                : "border-gray-300"
-          }`}
           placeholder="Enter deal title"
+          className={inputClasses("title")}
         />
+        {touchedFields.title && !errors.title && (
+          <FiCheckCircle
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
+          />
+        )}
+        {errors.title && (
+          <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
+        )}
       </div>
 
-      {/* status */}
+      {/* Status */}
       <div>
-        <label
-          htmlFor="status"
-          className="block text-sm font-medium text-gray-600"
-        >
-          status
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
+          Status
         </label>
         <div className="relative">
           <select
-            {...register("status", { required: "status is required" })}
-            id="status"
-            className="w-full appearance-none rounded-lg border border-gray-300 p-3 focus:border-purple-500 focus:outline-none"
+            {...register("status")}
+            className={`w-full appearance-none rounded-lg border p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:outline-none focus:border-purple-500`}
           >
             <option value="">Select Status</option>
             <option value="open">Open</option>
@@ -96,112 +99,70 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
             <option value="on_Hold">On-Hold</option>
             <option value="cancelled">Cancelled</option>
           </select>
-
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
             ▼
           </div>
-
-          {/* ✔️ علامة الصح */}
           {touchedFields.status && !errors.status && (
             <FiCheckCircle
-              size={18}
               className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500"
+              size={18}
             />
           )}
-          {errors?.status && (
+          {errors.status && (
             <p className="mt-1 text-sm text-red-500">{errors.status.message}</p>
           )}
         </div>
       </div>
 
       {/* Deal Value */}
-      <div className="relative">
-        <label
-          htmlFor="amount"
-          className="block text-sm font-medium text-gray-600"
-        >
+      <div>
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Deal Value
         </label>
-
         <input
           {...register("amount", {
-            required: "Value is required",
-            min: {
-              value: 1,
-              message: "Value must be greater than 0",
-            },
             valueAsNumber: true,
+            required: true,
+            min: 1,
           })}
           type="number"
-          id="amount"
-          className={`w-full rounded-lg border p-3 pr-10 focus:outline-none ${
-            errors.amount
-              ? "border-red-500"
-              : touchedFields.amount
-                ? "border-green-500"
-                : "border-gray-300 focus:border-purple-500"
-          }`}
           placeholder="Enter deal value"
+          className={inputClasses("amount")}
         />
-
-        {/* ✔️ علامة الصح */}
         {touchedFields.amount && !errors.amount && (
           <FiCheckCircle
-            size={18}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
           />
         )}
-
-        {/* ❌ Error */}
-        {errors?.amount && (
+        {errors.amount && (
           <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>
         )}
       </div>
 
-      {/* Deal probability */}
-      <div className="relative">
-        <label
-          htmlFor="probability"
-          className="block text-sm font-medium text-gray-600"
-        >
+      {/* Deal Probability */}
+      <div>
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Deal Probability %
         </label>
-
         <input
           {...register("probability", {
-            required: "probability value is required",
-            min: {
-              value: 1,
-              message: "Value must be greater than 0",
-            },
-            max: {
-              value: 100,
-              message: "Value must be at most 100",
-            },
             valueAsNumber: true,
+            required: true,
+            min: 1,
+            max: 100,
           })}
           type="number"
-          id="probability"
-          className={`w-full rounded-lg border p-3 pr-10 focus:outline-none ${
-            errors.probability
-              ? "border-red-500"
-              : touchedFields.probability
-                ? "border-green-500"
-                : "border-gray-300 focus:border-purple-500"
-          }`}
-          placeholder="Enter deal value"
+          placeholder="Enter deal probability"
+          className={inputClasses("probability")}
         />
-
-        {/* ✔️ علامة الصح */}
         {touchedFields.probability && !errors.probability && (
           <FiCheckCircle
-            size={18}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
           />
         )}
-
-        {/* ❌ Error */}
-        {errors?.probability && (
+        {errors.probability && (
           <p className="mt-1 text-sm text-red-500">
             {errors.probability.message}
           </p>
@@ -210,40 +171,22 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
 
       {/* Deal Date */}
       <div>
-        <label
-          htmlFor="expectedCloseDate"
-          className="block text-sm font-medium text-gray-600"
-        >
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-200">
           Deal Date
         </label>
         <input
-          {...register("expectedCloseDate", {
-            required: "Date is required",
-            min: {
-              value: today,
-              message: "Date Can't be less before today",
-            },
-          })}
-          defaultValue={today}
+          {...register("expectedCloseDate", { required: true, min: today })}
           type="date"
-          id="expectedCloseDate"
-          className={`w-full rounded-lg border p-3 pr-10 focus:outline-none ${
-            errors.amount
-              ? "border-red-500"
-              : touchedFields.amount
-                ? "border-green-500"
-                : "border-gray-300 focus:border-purple-500"
-          }`}
+          defaultValue={today}
+          className={inputClasses("expectedCloseDate")}
         />
-
-        {/* ✔️ علامة الصح */}
         {touchedFields.expectedCloseDate && !errors.expectedCloseDate && (
           <FiCheckCircle
-            size={18}
             className="absolute right-8 top-1/2 -translate-y-1/2 text-green-500"
+            size={18}
           />
         )}
-        {errors?.expectedCloseDate && (
+        {errors.expectedCloseDate && (
           <p className="mt-1 text-sm text-red-500">
             {errors.expectedCloseDate.message}
           </p>
@@ -255,11 +198,10 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
         <button
           type="button"
           onClick={() => setIsEditDealModalOpen(false)}
-          className="rounded-lg bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+          className="rounded-lg bg-gray-200 dark:bg-gray-700 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
         >
           Cancel
         </button>
-
         <button
           type="submit"
           className="rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
@@ -270,4 +212,5 @@ const EditDealForm = ({ selectedDealId, setIsEditDealModalOpen, onSubmit }) => {
     </form>
   );
 };
+
 export default EditDealForm;

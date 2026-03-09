@@ -8,77 +8,112 @@ import DealComponent from "../Deal/DealComponent";
 import Main from "../Main/MainComponent";
 import Dashboard from "../Dashboard/Dashboard";
 import ActivityComponent from "../Activity/ActivityComponent";
-import ReportsComponent from "../Reports/ReportsComponent";
 import LeadDetails from "../Lead Details/LeadDetails";
-import { jwtDecode } from "jwt-decode";
-import { useEffect } from "react";
 import ProfileComponent from "../Profile/ProfileComponent";
 import ContactDetails from "../Contact Details/ContactDetails";
 import DealDetailsComponent from "../Deal Details/DealDetailsComponent";
+import ProtectedRoute from "../Protected Route/ProtectedRoute";
+import { AuthProvider } from "../../Context/Auth Context/AuthContext";
+import SettingsComponent from "../Settings/SettingsComponent";
+import NotFoundcomponent from "../Not found/Notfoundcomponent";
 
 export default function App() {
-  const userData = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
-    const data = jwtDecode(token);
-    return data;
-  };
-
-  const logOut = () => {
-    localStorage.removeItem("token");
-  };
-  useEffect(() => {
-    userData();
-  }, []);
   const routes = createBrowserRouter([
     {
       path: "/",
-      element: <Main userData={userData()} logOut={logOut} />,
+      element: <Main />,
+      errorElement:<NotFoundcomponent/>,
       children: [
         {
           path: "/",
-          element: <Dashboard userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "dashboard",
-          element: <Dashboard userData={userData()} />,
+
+          element: (
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "profile",
-          element: <ProfileComponent userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <ProfileComponent />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "lead",
-          element: <LeadComponent userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <LeadComponent />
+            </ProtectedRoute>
+          ),
         },
 
         {
           path: "contact",
-          element: <ContactComponent userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <ContactComponent />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "deal",
-          element: <DealComponent userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <DealComponent />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "activity",
-          element: <ActivityComponent userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <ActivityComponent />
+            </ProtectedRoute>
+          ),
         },
-        {
-          path: "report",
-          element: <ReportsComponent userData={userData()} />,
-        },
+
         {
           path: "lead/:id",
-          element: <LeadDetails userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <LeadDetails />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "contact/:id",
-          element: <ContactDetails userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <ContactDetails />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "settings",
+          element: (
+            <ProtectedRoute>
+              <SettingsComponent />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "deal/:id",
-          element: <DealDetailsComponent userData={userData()} />,
+          element: (
+            <ProtectedRoute>
+              <DealDetailsComponent />
+            </ProtectedRoute>
+          ),
         },
       ],
     },
@@ -94,9 +129,9 @@ export default function App() {
   ]);
 
   return (
-    <>
+    <AuthProvider>
       <Toaster position="top-center" />
       <RouterProvider router={routes} />
-    </>
+    </AuthProvider>
   );
 }

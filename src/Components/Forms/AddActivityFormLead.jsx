@@ -44,20 +44,21 @@ const AddActivityFormLead = ({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
+      {/* Activity Type */}
       <div className="mb-4">
         <label
           htmlFor="type"
-          className="block mb-1 text-sm font-medium text-gray-700"
+          className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
         >
           Activity Type
         </label>
-
         <div className="relative">
           <select
             id="type"
             {...register("type")}
             className={`w-full appearance-none rounded-md border px-3 py-2 text-sm
-          ${errors.type ? "border-red-500" : "border-gray-300"}
+          bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+          ${errors.type ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
           >
             <option value="">Select activity</option>
@@ -66,8 +67,7 @@ const AddActivityFormLead = ({
             <option value="meeting">📅 Meeting</option>
             <option value="follow-up">🔁 Follow up</option>
           </select>
-
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400 dark:text-gray-400">
             ▼
           </div>
         </div>
@@ -76,17 +76,20 @@ const AddActivityFormLead = ({
         )}
       </div>
 
+      {/* Note */}
       <div className="mb-4">
         <label
           htmlFor="note"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
         >
           Note
         </label>
         <textarea
           id="note"
           {...register("note")}
-          className={`w-full p-3 border rounded-lg ${errors.note ? "border-red-500" : "border-gray-300"}`}
+          className={`w-full p-3 border rounded-lg
+        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+        ${errors.note ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
           placeholder="Enter activity description"
         />
         {errors.note && (
@@ -94,10 +97,11 @@ const AddActivityFormLead = ({
         )}
       </div>
 
+      {/* Date */}
       <div className="mb-4">
         <label
           htmlFor="activityDate"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
         >
           Date
         </label>
@@ -106,7 +110,9 @@ const AddActivityFormLead = ({
           id="activityDate"
           {...register("activityDate")}
           defaultValue={today}
-          className={`w-full p-3 border rounded-lg ${errors.activityDate ? "border-red-500" : "border-gray-300"}`}
+          className={`w-full p-3 border rounded-lg
+        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+        ${errors.activityDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
         />
         {errors.activityDate && (
           <p className="text-red-500 text-sm mt-1">
@@ -115,11 +121,12 @@ const AddActivityFormLead = ({
         )}
       </div>
 
+      {/* Actions */}
       <div className="flex justify-between">
         <button
           type="button"
           onClick={() => setIsAddActivityOpen(false)}
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+          className="bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
         >
           Cancel
         </button>

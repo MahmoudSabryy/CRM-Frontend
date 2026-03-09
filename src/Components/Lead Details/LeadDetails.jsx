@@ -344,9 +344,11 @@ export default function LeadDetails() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween" }}
-            className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 p-8 overflow-auto"
+            className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-900 shadow-xl z-50 p-8 overflow-auto"
           >
-            <h2 className="text-xl font-semibold mb-6">Edit Lead</h2>
+            <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
+              Edit Lead
+            </h2>
 
             <EditLeadForm
               selectedLead={lead}
@@ -372,9 +374,11 @@ export default function LeadDetails() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween" }}
-            className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 p-8 overflow-auto"
+            className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-900 shadow-xl z-50 p-8 overflow-auto"
           >
-            <h2 className="text-xl font-semibold mb-6">Add Activity</h2>
+            <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
+              Add Activity
+            </h2>
 
             <AddActivityFormLead
               selectedLeadId={selectedLeadId}

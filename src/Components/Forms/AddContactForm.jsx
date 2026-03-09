@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -18,9 +18,8 @@ const validationSchema = Yup.object({
   company: Yup.string().required("Company is required"),
 });
 
-const AddContactForm = ({ onSubmit }) => {
+const AddContactForm = ({ onSubmit, setIsAddDrawerOpen }) => {
   const { getAllContacts } = useContext(ContactContext);
-  // إعداد useForm مع التحقق من الصحة باستخدام Yup
   const {
     register,
     handleSubmit,
@@ -32,13 +31,13 @@ const AddContactForm = ({ onSubmit }) => {
 
   const handleFormSubmit = async (formData) => {
     try {
-      // إرسال البيانات إلى الخادم عبر API
       await axios.post(`${baseURL}/contact/create`, formData, {
         headers: myHeaders,
       });
-      reset(); // إعادة تعيين النموذج بعد الإرسال
-      onSubmit(formData); // استدعاء الدالة onSubmit التي تم تمريرها من المكون الأب
-      getAllContacts(); // تحديث قائمة جهات الاتصال بعد الإضافة
+      reset();
+      onSubmit(formData);
+      getAllContacts();
+      setIsAddDrawerOpen(false);
       toast.success("Contact added successfully ✔");
     } catch (error) {
       toast.error(error.response?.data?.message || "Error adding contact");
@@ -51,7 +50,7 @@ const AddContactForm = ({ onSubmit }) => {
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-600 dark:text-gray-200"
         >
           Name
         </label>
@@ -59,11 +58,15 @@ const AddContactForm = ({ onSubmit }) => {
           {...register("name")}
           type="text"
           id="name"
-          className="w-full p-3 border border-gray-300 rounded-lg"
           placeholder="Enter contact name"
+          className="w-full p-3 border rounded-lg 
+                 border-gray-300 dark:border-gray-600
+                 bg-white dark:bg-gray-800
+                 text-gray-900 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {errors.name && (
-          <p className="text-red-500 text-xs">{errors.name.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
         )}
       </div>
 
@@ -71,7 +74,7 @@ const AddContactForm = ({ onSubmit }) => {
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-600 dark:text-gray-200"
         >
           Email
         </label>
@@ -79,11 +82,15 @@ const AddContactForm = ({ onSubmit }) => {
           {...register("email")}
           type="email"
           id="email"
-          className="w-full p-3 border border-gray-300 rounded-lg"
           placeholder="Enter contact email"
+          className="w-full p-3 border rounded-lg 
+                 border-gray-300 dark:border-gray-600
+                 bg-white dark:bg-gray-800
+                 text-gray-900 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {errors.email && (
-          <p className="text-red-500 text-xs">{errors.email.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
         )}
       </div>
 
@@ -91,7 +98,7 @@ const AddContactForm = ({ onSubmit }) => {
       <div>
         <label
           htmlFor="phone"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-600 dark:text-gray-200"
         >
           Phone
         </label>
@@ -99,11 +106,15 @@ const AddContactForm = ({ onSubmit }) => {
           {...register("phone")}
           type="tel"
           id="phone"
-          className="w-full p-3 border border-gray-300 rounded-lg"
           placeholder="Enter contact phone"
+          className="w-full p-3 border rounded-lg 
+                 border-gray-300 dark:border-gray-600
+                 bg-white dark:bg-gray-800
+                 text-gray-900 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {errors.phone && (
-          <p className="text-red-500 text-xs">{errors.phone.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
         )}
       </div>
 
@@ -111,7 +122,7 @@ const AddContactForm = ({ onSubmit }) => {
       <div>
         <label
           htmlFor="company"
-          className="block text-sm font-medium text-gray-600"
+          className="block text-sm font-medium text-gray-600 dark:text-gray-200"
         >
           Company
         </label>
@@ -119,11 +130,15 @@ const AddContactForm = ({ onSubmit }) => {
           {...register("company")}
           type="text"
           id="company"
-          className="w-full p-3 border border-gray-300 rounded-lg"
           placeholder="Enter company name"
+          className="w-full p-3 border rounded-lg 
+                 border-gray-300 dark:border-gray-600
+                 bg-white dark:bg-gray-800
+                 text-gray-900 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {errors.company && (
-          <p className="text-red-500 text-xs">{errors.company.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.company.message}</p>
         )}
       </div>
 
@@ -131,8 +146,8 @@ const AddContactForm = ({ onSubmit }) => {
       <div className="flex justify-between">
         <button
           type="button"
-          onClick={() => reset()}
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+          onClick={() => setIsAddDrawerOpen(false)}
+          className="bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
         >
           Cancel
         </button>
